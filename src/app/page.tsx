@@ -42,6 +42,8 @@ const Page = () => {
   const [desc, setDesc] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [status, setStatus] = useState('Active')
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
+  const [deleteConfirmModel, setDeleteConfirmModel] = useState(false)
 
   const fetchTasks = async () => {
     try {
@@ -211,20 +213,28 @@ const Page = () => {
     }
   };
 
-  const handleDeleteTask = async (taskId: string | number) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+  const triggerDeleteConfirm = (task: Task) => {
+    setTaskToDelete(task);
+    setDeleteConfirmModel(true);
+  };
+
+  const handleDeleteTask = async () => {
+    if (!taskToDelete) return;
     try {
-      const res = await fetch(`/api/task/${taskId}`, {
+      const res = await fetch(`/api/task/${taskToDelete.id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
       if (data.success) {
-        setTasks(prev => prev.filter(t => t.id !== taskId));
+        setTasks(prev => prev.filter(t => t.id !== taskToDelete.id));
       } else {
         alert(data.message || 'Failed to delete task.');
       }
     } catch (err) {
       alert('An error occurred while deleting the task.');
+    } finally {
+      setTaskToDelete(null);
+      setDeleteConfirmModel(false);
     }
   };
 
@@ -442,7 +452,7 @@ const Page = () => {
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => handleDeleteTask(task.id)}
+                        onClick={() => triggerDeleteConfirm(task)}
                         className="p-2 rounded-lg text-neutral-500 hover:text-rose-400 hover:bg-neutral-900 transition-all cursor-pointer"
                         title="Delete Task"
                       >
@@ -565,6 +575,42 @@ const Page = () => {
 
           </form>
 
+        </div>
+      )}
+
+      {deleteConfirmModel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-sm glass-modal p-6 rounded-2xl shadow-2xl animate-scale-up border border-neutral-800">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-3 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 mb-4 animate-pulse">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">Delete Task?</h3>
+              <p className="text-sm text-neutral-400 mb-6 leading-relaxed">
+                Are you sure you want to delete the task <span className="font-semibold text-white">"{taskToDelete?.title}"</span>? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-900">
+              <button 
+                type="button"
+                onClick={() => {
+                  setTaskToDelete(null);
+                  setDeleteConfirmModel(false);
+                }}
+                className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white rounded-full transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleDeleteTask}
+                className="px-5 py-2 text-sm font-medium text-white bg-rose-600 hover:bg-rose-500 rounded-full transition-all cursor-pointer hover:shadow-lg hover:shadow-rose-500/20"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
