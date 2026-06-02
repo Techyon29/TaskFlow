@@ -5,7 +5,7 @@ interface Itask{
   title:string,
   description?:string | null,
   due_date?: Date | null,
-  status: 'active' | 'complete',
+  status: 'new' | 'active' | 'complete' | 'New' | 'Active' | 'Complete',
   createdAt:Date,
   updateAt:Date,
 }
@@ -26,8 +26,8 @@ const taskSchema = new Schema<Itask>({
   },
   status:{
     type:String,
-    enum:['active','complete'],
-    default:'active'
+    enum:['new','active','complete','New','Active','Complete'],
+    default:'new'
   }
 },{
   collection:"task",
