@@ -1,6 +1,6 @@
 # TaskFlow
 
-TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. For this project, I chose the **Personal Task Manager** exercise, implementing a responsive front-end dashboard coupled with a robust REST API backed by MongoDB. The application allows users to seamlessly create, edit, search, filter, and delete tasks while maintaining a clean, glassmorphic UI with real-time status transitions (New, Active, Complete), dynamic metrics, due-date flags (e.g., Overdue, Due Today), and interactive feedback.
+TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. For this project, I chose the **Personal Task Manager** exercise, implementing a responsive front-end dashboard coupled with a robust REST API backed by MongoDB. The application allows users to seamlessly create, edit, search, filter, and delete tasks while maintaining a clean, glassmorphic UI with real-time status transitions (Incomplete, Complete), dynamic metrics, due-date flags (e.g., Overdue, Due Today), and interactive feedback.
 
 ---
 
@@ -82,7 +82,7 @@ All backend API routes reside under `/api/task`.
           "title": "Submit final report",
           "description": "Compile the financial and development metrics.",
           "due_date": "2026-06-15T00:00:00.000Z",
-          "status": "active",
+          "status": "incomplete",
           "createdAt": "2026-06-02T12:00:00.000Z",
           "updatedAt": "2026-06-02T12:05:00.000Z",
           "__v": 0
@@ -100,7 +100,7 @@ All backend API routes reside under `/api/task`.
       "title": "Complete code review",       // Required (string)
       "description": "Review pull request #12", // Optional (string)
       "due_date": "2026-06-10T12:00:00.000Z",   // Optional (ISO date string)
-      "status": "new"                           // Required (string: 'new' | 'active' | 'complete' | 'New' | 'Active' | 'Complete')
+      "status": "incomplete"                    // Required (string: 'incomplete' | 'complete' | 'Incomplete' | 'Complete')
     }
     ```
 *   **Response Shape (210 Created / 201)**:
@@ -113,7 +113,7 @@ All backend API routes reside under `/api/task`.
         "title": "Complete code review",
         "description": "Review pull request #12",
         "due_date": "2026-06-10T12:00:00.000Z",
-        "status": "new",
+        "status": "incomplete",
         "createdAt": "2026-06-02T12:10:00.000Z",
         "updatedAt": "2026-06-02T12:10:00.000Z",
         "__v": 0
