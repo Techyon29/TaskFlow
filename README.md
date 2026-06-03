@@ -15,6 +15,8 @@ TaskFlow is a premium, modern full-stack task management dashboard designed for 
 *   **Next.js 16 (App Router)**: Handled routing, Server Component rendering, and Server API endpoints within a unified structure to simplify database and frontend interactions.
 *   **React 19 & TypeScript**: Enabled robust type-safe state management, dynamic UI component handling, and custom client hooks for responsive interactivity.
 *   **Tailwind CSS v4 & PostCSS**: Used to build a stunning, premium dark-theme interface with custom animations (e.g., floating layers, fade-ins), glassmorphism styles, and mobile-friendly responsive grid designs.
+*   **Shadcn/ui & Base UI**: Used for modern, unstyled accessible UI primitives (e.g., Popover and Button) with customized premium tailwind themes.
+*   **React Day Picker & Date-fns**: Integrated to provide a rich, interactive Calendar interface for due date selection.
 *   **Mongoose & MongoDB**: Employed as the Object Data Modeling (ODM) library to connect to the MongoDB Atlas database and enforce a structured schema for task creation.
 *   **Lucide React**: Leveraged for a clean, modern, and light icon design system throughout the dashboard.
 *   **Clsx & Tailwind Merge**: Integrated in a custom `cn` utility to handle conditional classes cleanly without layout/styling conflicts.
@@ -188,7 +190,7 @@ All backend API routes reside under `/api/task`.
 │   │   ├── layout.tsx       # Main layout wrapper containing the custom Navbar
 │   │   └── page.tsx         # The interactive TaskFlow dashboard page
 │   ├── components/          # Reusable React components
-│   │   └── ui/              # Design System UI components (e.g., Navbar.tsx)
+│   │   └── ui/              # Design System UI components (Navbar, Skeleton, button, calendar, popover)
 │   ├── lib/                 # Third-party configurations and utils
 │   │   └── utils.ts         # Utility class merger function (cn) using clsx & tailwind-merge
 │   ├── models/              # Mongoose schema models
@@ -196,6 +198,7 @@ All backend API routes reside under `/api/task`.
 │   └── utils/               # Server-side utilities
 │       └── dbConnect.ts     # Mongoose connection layer and database caching
 ├── public/                  # Public static assets
+├── components.json          # Shadcn/ui component configuration
 ├── eslint.config.mjs        # ESLint rules settings
 ├── next.config.ts           # Next.js configurations
 ├── package.json             # Application dependencies and run scripts

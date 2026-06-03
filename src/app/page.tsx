@@ -16,6 +16,11 @@ import {
   Loader2
 } from 'lucide-react'
 import { cn } from '../lib/utils'
+import TaskSkeletons from '../components/ui/Skeleton';
+import { Calendar as CalendarComponent } from '../components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover'
+import { Button } from '../components/ui/button'
+import { format } from 'date-fns'
 
 interface Task {
   id: string | number;
@@ -29,6 +34,7 @@ const Page = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
   
   const [filter, setFilter] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
@@ -40,7 +46,7 @@ const Page = () => {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
-  const [dueDate, setDueDate] = useState('')
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined)
   const [status, setStatus] = useState('Active')
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [deleteConfirmModel, setDeleteConfirmModel] = useState(false)
@@ -107,7 +113,7 @@ const Page = () => {
     setEditingTask(task);
     setTitle(task.title);
     setDesc(task.description);
-    setDueDate(task.dueDate ? task.dueDate.split('T')[0] : '');
+    setDueDate(task.dueDate ? new Date(task.dueDate) : undefined);
     setStatus(task.status);
     setEditTaskModel(true);
   };
@@ -118,7 +124,7 @@ const Page = () => {
     setEditingTask(null);
     setTitle('');
     setDesc('');
-    setDueDate('');
+    setDueDate(undefined);
     setStatus('Active');
   };
 
@@ -126,7 +132,9 @@ const Page = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const formattedDueDate = dueDate ? new Date(dueDate).toISOString() : null;
+    setIsSaving(true);
+
+    const formattedDueDate = dueDate ? dueDate.toISOString() : null;
     const bodyStatus = status === 'New' ? 'new' : status === 'Active' ? 'active' : status === 'Complete' ? 'complete' : status.toLowerCase();
 
     const body = {
@@ -179,6 +187,8 @@ const Page = () => {
       handleCloseModal();
     } catch (err) {
       alert('An error occurred while saving the task.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -358,10 +368,7 @@ const Page = () => {
       </section>
 
       {loading ? (
-        <div className="py-24 flex flex-col items-center justify-center text-center">
-          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-          <p className="text-sm text-neutral-500 mt-4 font-medium">Fetching your workspace tasks...</p>
-        </div>
+        <TaskSkeletons/>
       ) : error ? (
         <div className="py-16 flex flex-col items-center justify-center text-center max-w-md mx-auto">
           <div className="p-3 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 mb-4">
@@ -529,14 +536,25 @@ const Page = () => {
               <div className="grid grid-cols-2 gap-4">
                 
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="due_date" className="text-neutral-300 font-semibold text-xs uppercase tracking-wider">Due Date</label>
-                  <input 
-                    type="date" 
-                    id="due_date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm" 
-                  />
+                  <span className="text-neutral-300 font-semibold text-xs uppercase tracking-wider">Due Date</span>
+                  <Popover>
+                    <PopoverTrigger
+                      className={cn(
+                        "w-full justify-start text-left font-normal p-3 h-auto rounded-xl bg-neutral-950 border border-neutral-800 hover:bg-neutral-900 hover:text-white text-white focus:ring-1 focus:ring-indigo-500 flex items-center gap-1.5 cursor-pointer",
+                        !dueDate && "text-neutral-500"
+                      )}
+                    >
+                      <Calendar className="mr-2 h-4 w-4 text-neutral-400" />
+                      {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-neutral-950 border border-neutral-800" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={dueDate}
+                        onSelect={setDueDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -561,15 +579,24 @@ const Page = () => {
               <button 
                 type="button"
                 onClick={handleCloseModal}
-                className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white rounded-full transition-all cursor-pointer"
+                disabled={isSaving}
+                className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white rounded-full transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button 
                 type="submit"
-                className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-full transition-all cursor-pointer hover:shadow-lg hover:shadow-indigo-500/20"
+                disabled={isSaving}
+                className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-full transition-all cursor-pointer hover:shadow-lg hover:shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save Changes
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </button>
             </div>
 
