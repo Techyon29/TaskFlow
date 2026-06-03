@@ -5,9 +5,9 @@ interface Itask{
   title:string,
   description?:string | null,
   due_date?: Date | null,
-  status: 'new' | 'active' | 'complete' | 'New' | 'Active' | 'Complete',
+  status: 'incomplete' | 'complete' | 'Incomplete' | 'Complete' | 'new' | 'New',
   createdAt:Date,
-  updateAt:Date,
+  updatedAt:Date,
 }
 
 
@@ -26,8 +26,8 @@ const taskSchema = new Schema<Itask>({
   },
   status:{
     type:String,
-    enum:['new','active','complete','New','Active','Complete'],
-    default:'new'
+    enum:['incomplete','complete','Incomplete','Complete','new','New'],
+    default:'incomplete'
   }
 },{
   collection:"task",

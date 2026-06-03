@@ -1,6 +1,6 @@
 # TaskFlow
 
-TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. For this project, I chose the **Task Management Application with Database Integration** exercise, implementing a responsive front-end dashboard coupled with a robust REST API backed by MongoDB. The application allows users to seamlessly create, edit, search, filter, and delete tasks while maintaining a clean, glassmorphic UI with real-time status transitions (New, Active, Complete), dynamic metrics, due-date flags (e.g., Overdue, Due Today), and interactive feedback.
+TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. For this project, I chose the **Personal Task Manager** exercise, implementing a responsive front-end dashboard coupled with a robust REST API backed by MongoDB. The application allows users to seamlessly create, edit, search, filter, and delete tasks while maintaining a clean, glassmorphic UI with real-time status transitions (New, Active, Complete), dynamic metrics, due-date flags (e.g., Overdue, Due Today), and interactive feedback.
 
 ---
 
@@ -205,6 +205,13 @@ All backend API routes reside under `/api/task`.
 ├── postcss.config.mjs       # PostCSS configuration for Tailwind CSS v4
 └── tsconfig.json            # TypeScript compile configurations
 ```
+
+---
+
+## 🤖 AI Assistance & Acceleration
+
+This project was built and accelerated using advanced AI programming assistants:
+*   **Antigravity (by Google DeepMind)**: Assisted in writing logic, designing responsive UI layouts and debugging TypeScript errors. This pair-programming collaboration significantly improved development speed and code quality.
 
 ---
 

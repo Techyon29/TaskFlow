@@ -6,11 +6,11 @@ import Task from "@/src/models/Task";
 export async function GET(){
     try{
         await dbConnect();
-        const task = await Task.find();
+        const task = await Task.find().sort({createdAt:-1});
         return NextResponse.json({success:true,message:"Task retrieve success",task},{status:200})
     }catch(e : any){
          console.error(e.message)
-        return NextResponse.json({success:false,message:"Error"})
+        return NextResponse.json({success:false,message:"Error"},{status:500})
     }
 }
 

@@ -38,7 +38,7 @@ const Page = () => {
   
   const [filter, setFilter] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
-  const filterCategories = ['All', 'New', 'Active', 'Complete']
+  const filterCategories = ['All', 'Incomplete', 'Complete']
 
   const [addTaskModel, setAddTaskModel] = useState(false)
   const [editTaskModel, setEditTaskModel] = useState(false)
@@ -47,7 +47,7 @@ const Page = () => {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined)
-  const [status, setStatus] = useState('Active')
+  const [status, setStatus] = useState('Incomplete')
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [deleteConfirmModel, setDeleteConfirmModel] = useState(false)
 
@@ -63,7 +63,7 @@ const Page = () => {
           title: t.title,
           description: t.description || '',
           dueDate: t.due_date || null,
-          status: t.status === 'new' ? 'New' : t.status === 'active' ? 'Active' : t.status === 'complete' ? 'Complete' : t.status
+          status: (t.status === 'new' || t.status === 'incomplete' || t.status === 'active') ? 'Incomplete' : t.status === 'complete' ? 'Complete' : t.status
         }))
         setTasks(mapped)
       } else {
@@ -135,7 +135,7 @@ const Page = () => {
     setIsSaving(true);
 
     const formattedDueDate = dueDate ? dueDate.toISOString() : null;
-    const bodyStatus = status === 'New' ? 'new' : status === 'Active' ? 'active' : status === 'Complete' ? 'complete' : status.toLowerCase();
+    const bodyStatus = status === 'Incomplete' ? 'incomplete' : 'complete';
 
     const body = {
       title,
@@ -158,7 +158,7 @@ const Page = () => {
             title: data.task.title,
             description: data.task.description || '',
             dueDate: data.task.due_date || null,
-            status: data.task.status === 'new' ? 'New' : data.task.status === 'active' ? 'Active' : data.task.status === 'complete' ? 'Complete' : data.task.status
+            status: (data.task.status === 'new' || data.task.status === 'incomplete' || data.task.status === 'active') ? 'Incomplete' : data.task.status === 'complete' ? 'Complete' : data.task.status
           };
           setTasks(prev => [newTask, ...prev]);
         } else {
@@ -177,7 +177,7 @@ const Page = () => {
             title: data.task.title,
             description: data.task.description || '',
             dueDate: data.task.due_date || null,
-            status: data.task.status === 'new' ? 'New' : data.task.status === 'active' ? 'Active' : data.task.status === 'complete' ? 'Complete' : data.task.status
+            status: (data.task.status === 'new' || data.task.status === 'incomplete' || data.task.status === 'active') ? 'Incomplete' : data.task.status === 'complete' ? 'Complete' : data.task.status
           };
           setTasks(prev => prev.map(t => t.id === editingTask.id ? updatedTask : t));
         } else {
@@ -193,7 +193,7 @@ const Page = () => {
   };
 
   const toggleTaskStatus = async (task: Task) => {
-    const nextStatus = task.status === 'Complete' ? 'active' : 'complete';
+    const nextStatus = task.status === 'Complete' ? 'incomplete' : 'complete';
     const body = {
       title: task.title,
       description: task.description,
@@ -214,7 +214,7 @@ const Page = () => {
           title: data.task.title,
           description: data.task.description || '',
           dueDate: data.task.due_date || null,
-          status: data.task.status === 'new' ? 'New' : data.task.status === 'active' ? 'Active' : data.task.status === 'complete' ? 'Complete' : data.task.status
+          status: (data.task.status === 'new' || data.task.status === 'incomplete' || data.task.status === 'active') ? 'Incomplete' : data.task.status === 'complete' ? 'Complete' : data.task.status
         };
         setTasks(prev => prev.map(t => t.id === task.id ? updatedTask : t));
       }
@@ -249,8 +249,7 @@ const Page = () => {
   };
 
   const totalCount = tasks.length;
-  const newCount = tasks.filter(t => t.status === 'New').length;
-  const activeCount = tasks.filter(t => t.status === 'Active').length;
+  const incompleteCount = tasks.filter(t => t.status === 'Incomplete').length;
   const completeCount = tasks.filter(t => t.status === 'Complete').length;
 
   const filteredTasks = tasks.filter((task) => {
@@ -263,7 +262,7 @@ const Page = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 min-h-screen">
       
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         
         <div className="relative group overflow-hidden rounded-2xl glass-panel p-5 transition-all duration-300 hover:border-neutral-700">
           <div className="absolute top-0 right-0 p-3 text-neutral-800 opacity-20 group-hover:scale-110 transition-transform duration-300">
@@ -278,18 +277,9 @@ const Page = () => {
           <div className="absolute top-0 right-0 p-3 text-amber-500/10 opacity-30 group-hover:scale-110 transition-transform duration-300">
             <AlertCircle className="w-16 h-16" />
           </div>
-          <p className="text-xs md:text-sm font-semibold text-neutral-400">New Tasks</p>
-          <p className="text-2xl md:text-4xl font-bold text-amber-400 mt-2 tracking-tight">{newCount}</p>
+          <p className="text-xs md:text-sm font-semibold text-neutral-400">Incomplete Tasks</p>
+          <p className="text-2xl md:text-4xl font-bold text-amber-400 mt-2 tracking-tight">{incompleteCount}</p>
           <div className="h-1 w-12 bg-amber-500/50 rounded-full mt-4 group-hover:w-20 transition-all duration-300"></div>
-        </div>
-
-        <div className="relative group overflow-hidden rounded-2xl glass-panel p-5 transition-all duration-300 hover:border-indigo-500/30">
-          <div className="absolute top-0 right-0 p-3 text-indigo-500/10 opacity-30 group-hover:scale-110 transition-transform duration-300">
-            <PlayCircle className="w-16 h-16" />
-          </div>
-          <p className="text-xs md:text-sm font-semibold text-neutral-400">Active Tasks</p>
-          <p className="text-2xl md:text-4xl font-bold text-indigo-400 mt-2 tracking-tight">{activeCount}</p>
-          <div className="h-1 w-12 bg-indigo-500/50 rounded-full mt-4 group-hover:w-20 transition-all duration-300"></div>
         </div>
 
         <div className="relative group overflow-hidden rounded-2xl glass-panel p-5 transition-all duration-300 hover:border-emerald-500/30">
@@ -310,8 +300,7 @@ const Page = () => {
             const isActive = filter === cat;
             const count = 
               cat === 'All' ? totalCount :
-              cat === 'New' ? newCount :
-              cat === 'Active' ? activeCount :
+              cat === 'Incomplete' ? incompleteCount :
               completeCount;
 
             return (
@@ -356,7 +345,7 @@ const Page = () => {
           <button 
             onClick={() => {
               handleCloseModal();
-              setStatus('New');
+              setStatus('Incomplete');
               setAddTaskModel(true);
             }}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-full cursor-pointer transition-all hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95"
@@ -421,8 +410,7 @@ const Page = () => {
 
                       <span className={cn(
                         "px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider",
-                        task.status === 'New' && "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-                        task.status === 'Active' && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
+                        task.status === 'Incomplete' && "bg-amber-500/10 text-amber-400 border border-amber-500/20",
                         task.status === 'Complete' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                       )}>
                         {task.status}
@@ -495,7 +483,7 @@ const Page = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <ListTodo className="w-5 h-5 text-indigo-400" />
-                {addTaskModel ? 'Create New Task' : 'Edit Task'}
+                {addTaskModel ? 'Create Incomplete Task' : 'Edit Task'}
               </h2>
               <button 
                 type="button"
@@ -565,8 +553,7 @@ const Page = () => {
                     onChange={(e) => setStatus(e.target.value)}
                     className="w-full p-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
                   >
-                    <option value="New">New</option>
-                    <option value="Active">Active</option>
+                    <option value="Incomplete">Incomplete</option>
                     <option value="Complete">Complete</option>
                   </select>
                 </div>
