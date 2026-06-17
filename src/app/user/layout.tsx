@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import Navbar from "@/src/components/ui/Navbar";
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -30,6 +29,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-screen bg-[#0a0a0a] bg-[radial-gradient(circle_at_25%_25%,#222222_0.5px,transparent_1px),radial-gradient(circle_at_75%_75%,#111111_0.5px,transparent_1px)] bg-[length:10px_10px]">
+        <Navbar/>
         {children}</body>
     </html>
   );
