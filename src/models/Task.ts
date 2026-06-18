@@ -1,7 +1,8 @@
-import mongoose, {Schema, Model, Document} from "mongoose";
+import mongoose, {Schema, Model, Document, Types} from "mongoose";
 
 
 interface Itask{
+  userId:Types.ObjectId;
   title:string,
   description?:string | null,
   due_date?: Date | null,
@@ -12,6 +13,10 @@ interface Itask{
 
 
 const taskSchema = new Schema<Itask>({
+  userId:{
+    type:mongoose.Types.ObjectId,
+    ref:"User"
+  },
   title:{
     type:String,
     required:true,
