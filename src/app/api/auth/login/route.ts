@@ -16,7 +16,7 @@ export async function POST(req : NextRequest){
         const body = await req.json();
         const validator = loginValidator.safeParse(body);
         if(!validator.success){
-            return NextResponse.json({success:false,message:validator.error},{status:400})
+            return NextResponse.json({success:false,message:validator.error.issues.map(e=>e.message).join(",")},{status:400})
         }
         const {email, password} = validator.data;
 
