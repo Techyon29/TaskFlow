@@ -3,10 +3,15 @@ import dbConnect from "@/src/utils/dbConnect";
 import Task from "@/src/models/Task";
 
 
-export async function GET(){
+export async function GET(req : NextRequest){
     try{
+        const id = req.headers.get('x-user-id');
+        if(!id){
+            return NextResponse.json({success:false,message:"Unauthorized"},{status:401})
+        }
+
         await dbConnect();
-        const task = await Task.find().sort({createdAt:-1});
+        const task = await Task.findById(id).sort({createdAt:-1});
         return NextResponse.json({success:true,message:"Task retrieve success",task},{status:200})
     }catch(e : any){
          console.error(e.message)

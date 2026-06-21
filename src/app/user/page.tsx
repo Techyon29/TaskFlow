@@ -55,7 +55,7 @@ const Page = () => {
     try {
       setLoading(true)
       setError(null)
-      const res = await fetch('/api/task')
+      const res = await fetch('/api/user/task')
       const data = await res.json()
       if (data.success && Array.isArray(data.task)) {
         const mapped = data.task.map((t: any) => ({

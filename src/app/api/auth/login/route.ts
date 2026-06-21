@@ -31,7 +31,7 @@ export async function POST(req : NextRequest){
         if(!isMatch){
             return NextResponse.json({success:false,message:"Wrong Password"},{status:400})
         }
-        const token = await new SignJWT({id:existUser._id.toString()}).setExpirationTime('7d').setProtectedHeader({alg:'HS256'}).sign(secret);
+        const token = await new SignJWT({id:existUser._id,email,role:existUser.role}).setExpirationTime('7d').setProtectedHeader({alg:'HS256'}).sign(secret);
 
         const response = NextResponse.json({success:true,message:"User Login Successfully"},{status:200})
 
