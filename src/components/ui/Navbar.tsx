@@ -1,7 +1,31 @@
+"use client"
 import React from 'react'
 import { Layers } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 const Navbar = () => {
+  const router = useRouter()
+  const handleLogOut= async ()=>{
+    try {
+      const response = await fetch("/api/auth/logout",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+        },
+      })
+
+      const res = await response.json();
+      if(!res.success){
+        toast.error(res.message)
+      }else{
+        toast.success(res.message)
+        router.push('/auth/login')
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something Went wrong")
+    }
+  }
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-[#0a0a0a]/60 border-b border-neutral-900/80 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,6 +46,9 @@ const Navbar = () => {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               Personal Workspace
+            </div>
+            <div>
+            <button className=' text-white rounded-full px-3 py-1 bg-neutral-900/80 hover:bg-neutral-800 transition-colors duration-300 hover:border-neutral-700 hover:bg-neutral-800 border border-neutral-800 cursor-pointer' onClick={handleLogOut} >LogOut</button>
             </div>
           </div>
         </div>

@@ -146,7 +146,7 @@ const Page = () => {
 
     try {
       if (addTaskModel) {
-        const res = await fetch('/api/task', {
+        const res = await fetch('/api/user/task', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
@@ -165,7 +165,7 @@ const Page = () => {
           alert(data.message || 'Failed to create task.');
         }
       } else if (editTaskModel && editingTask) {
-        const res = await fetch(`/api/task/${editingTask.id}`, {
+        const res = await fetch(`/api/user/task/${editingTask.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
@@ -202,7 +202,7 @@ const Page = () => {
     };
 
     try {
-      const res = await fetch(`/api/task/${task.id}`, {
+      const res = await fetch(`/api/user/task/${task.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -231,7 +231,7 @@ const Page = () => {
   const handleDeleteTask = async () => {
     if (!taskToDelete) return;
     try {
-      const res = await fetch(`/api/task/${taskToDelete.id}`, {
+      const res = await fetch(`/api/user/task/${taskToDelete.id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
