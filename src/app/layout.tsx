@@ -26,7 +26,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>)
 {
-    const toast_style = "rounded-2xl bg-black border border-gray-500"
   return (
     <html
       lang="en"

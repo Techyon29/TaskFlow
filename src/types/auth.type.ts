@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import { forgetEmailValidation, otpVerifyValidation, resetPasswordValidation } from '../app/lib/validation/auth.validation'
+import { forgetEmailValidation, otpVerifyValidation, resetPasswordValidation } from '../lib/validation/auth.validation'
 
 
 export type forgetEmailType = z.infer<typeof forgetEmailValidation>

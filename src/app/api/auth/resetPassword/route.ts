@@ -29,6 +29,9 @@ export async function POST(req: NextRequest){
         }
         const hashPassword = await argon2.hash(newPassword)
         const existUser = await User.findOneAndUpdate({email},{$set:{password:hashPassword}}).select("-password")
+        if(!existUser){
+            return NextResponse.json({success:false,message:"User Not Found"},{status:404})
+        }
 
         await OTP.findOneAndDelete({email})
         

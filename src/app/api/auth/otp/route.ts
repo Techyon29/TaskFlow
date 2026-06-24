@@ -55,6 +55,7 @@ export async function POST(req : NextRequest){
             existOtp.requestCount = existOtp.expiredAt < new Date() ? 1 : existOtp.requestCount  + 1;
             existOtp.hashOtp = hashOtp;
             existOtp.expiredAt = expiredAt;
+            existOtp.failCount = 0;
 
             await existOtp.save()
         }else{

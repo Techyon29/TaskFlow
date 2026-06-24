@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import {useForm} from 'react-hook-form'
 import {z}from 'zod'
 import {zodResolver} from '@hookform/resolvers/zod'
-import { forgetEmailValidation, signUpSchema } from '../../lib/validation/auth.validation'
+import { forgetEmailValidation, signUpSchema } from '../../../lib/validation/auth.validation'
 const Page = () => {
 
   const [loading, setLoading] = useState(false)
