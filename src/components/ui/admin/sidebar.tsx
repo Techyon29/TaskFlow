@@ -2,7 +2,8 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, User, Menu, X, ShieldAlert, Sparkles } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { LayoutDashboard, User, Menu, X, ShieldAlert, Sparkles, LogOut } from 'lucide-react'
 import { cn } from '@/src/lib/utils'
 
 const Sidebar = () => {
@@ -21,6 +22,26 @@ const Sidebar = () => {
       icon: User,
     }
   ]
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const res = await response.json()
+      if (res.success) {
+        toast.success(res.message)
+        window.location.href = '/auth/login'
+      } else {
+        toast.error(res.message)
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something went wrong")
+    }
+  }
 
   return (
     <>
@@ -71,6 +92,13 @@ const Sidebar = () => {
                   </Link>
                 )
               })}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 mx-4 rounded-xl text-sm font-medium transition-all duration-200 border border-transparent text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 cursor-pointer text-left"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
             </nav>
           </div>
 
