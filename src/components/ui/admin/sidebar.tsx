@@ -1,27 +1,108 @@
+"use client"
 import React, { useState } from 'react'
 import Link from 'next/link'
-import {LayoutDashboard,User,Menu,X} from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { LayoutDashboard, User, Menu, X, ShieldAlert, Sparkles } from 'lucide-react'
 import { cn } from '@/src/lib/utils'
 
 const Sidebar = () => {
-    const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  const navLinks = [
+    {
+      href: "/admin",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      href: "/admin/user",
+      label: "User Management",
+      icon: User,
+    }
+  ]
+
   return (
     <>
-    <div className={cn(' min-w-2xs min-h-screen  border bg-background max-md:fixed transition-all duration-300 ease-in-out ', menuOpen ? "max-md:left-0":"max-md:-left-100")}>
-        <aside className=' w-full h-full mt-10'>
-            <h1 className=' text-4xl text-center text-white font-semibold'>Task<span className=' text-indigo-500'>Flow</span></h1>
-            <nav className=' text-white pt-10 flex flex-col gap-4 text-xl'>
-                <Link href={"/admin/"} className=' group flex items-center gap-2 justify-center p-4 hover:bg-white/10 border-l-4 hover:border-l-indigo-400'><LayoutDashboard className='group-hover:text-indigo-400'/>Dashboard</Link>
-                <Link href={"/admin/user"} className='group flex items-center gap-2 justify-center p-4 hover:bg-white/10 border-l-4 hover:border-l-indigo-400'><User className='group-hover:text-indigo-400'/>User Management</Link>
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      <div 
+        className={cn(
+          'fixed md:sticky top-0 left-0 z-50 h-screen w-64 border-r border-white/5 bg-[#0a0a0a]/90 backdrop-blur-xl flex flex-col justify-between py-6 transition-transform duration-300 ease-in-out md:translate-x-0', 
+          menuOpen ? "translate-x-0" : "max-md:-translate-x-full"
+        )}
+      >
+        <aside className="w-full flex flex-col h-full justify-between">
+          <div className="space-y-8">
+            <div className="px-6 flex items-center justify-between">
+              <Link href="/admin" className="flex items-center gap-2 group">
+                <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 transition-transform">
+                  <Sparkles className="w-5 h-5 animate-pulse" />
+                </div>
+                <h1 className="text-2xl font-bold text-white tracking-tight">
+                  Task<span className="text-indigo-500">Flow</span>
+                </h1>
+              </Link>
+            </div>
+
+            <nav className="flex flex-col gap-1.5">
+              {navLinks.map((link) => {
+                const Icon = link.icon
+                const isActive = pathname === link.href || pathname === `${link.href}/`
+                return (
+                  <Link 
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-3 mx-4 rounded-xl text-sm font-medium transition-all duration-200 border',
+                      isActive 
+                        ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-md shadow-indigo-500/5 font-semibold' 
+                        : 'text-slate-400 border-transparent hover:text-white hover:bg-white/[0.04]'
+                    )}
+                  >
+                    <Icon className={cn('w-4 h-4 transition-colors', isActive ? 'text-indigo-400' : 'text-slate-400')} />
+                    {link.label}
+                  </Link>
+                )
+              })}
             </nav>
+          </div>
+
+          <div className="border-t border-white/5 pt-6 px-6">
+            <div className="flex items-center gap-3 p-2.5 bg-white/[0.02] border border-white/5 rounded-xl">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-black/25">
+                A
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-semibold text-white truncate">Administrator</div>
+                <div className="text-[10px] text-indigo-400 font-medium flex items-center gap-1 mt-0.5">
+                  <ShieldAlert className="w-3 h-3 text-indigo-500" /> Control Console
+                </div>
+              </div>
+            </div>
+          </div>
         </aside>
-    </div>
-    <div className={cn(
-      'p-2 max-md:block hidden absolute transition-all duration-300 ease-in-out', 
-      menuOpen ? "left-75" : "left-2"
-    )}>
-    <button className=' text-white border p-2 rounded-lg border-indigo-500 hover:bg-indigo-400 cursor-pointer ' onClick={()=>setMenuOpen(prev=>!prev)}>{!menuOpen ? <Menu/> : <X/>} </button>
-    </div>
+      </div>
+
+      <div 
+        className={cn(
+          'fixed top-4 z-50 md:hidden transition-all duration-300 ease-in-out', 
+          menuOpen ? "left-[272px]" : "left-4"
+        )}
+      >
+        <button 
+          className="flex items-center justify-center text-white bg-indigo-600 border border-indigo-500/30 p-2.5 rounded-xl shadow-lg cursor-pointer hover:bg-indigo-500 active:scale-95 transition-all" 
+          onClick={() => setMenuOpen(prev => !prev)}
+        >
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
     </>
   )
 }

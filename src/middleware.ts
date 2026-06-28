@@ -16,11 +16,11 @@ export async function middleware(req : NextRequest){
         const pathname = req.nextUrl.pathname;
 
         if((pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) && role !== "admin"){
-            return NextResponse.redirect(new URL("/auth/login"))
+            return NextResponse.redirect(new URL("/auth/login",req.url))
         }
 
         if((pathname.startsWith("/user") || pathname.startsWith("/api/user")) && role !== "user" && role !== "admin"){
-            return NextResponse.redirect(new URL("/auth/login"))
+            return NextResponse.redirect(new URL("/auth/login",req.url))
         }
 
         const reqHeader = new Headers(req.headers)
@@ -35,7 +35,7 @@ export async function middleware(req : NextRequest){
 }
 
 export const config = {
-    matcher:['/api/user/:path*' ,'/user/:path*']
+    matcher:['/api/user/:path*' ,'/user/:path*','/api/admin/:path*','/admin/:path*']
 
     // ,'/api/admin/:path*','/admin/:path*'
 }

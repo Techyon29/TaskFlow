@@ -8,7 +8,7 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className='flex'>
+    <div className='flex max-sm:block w-full'>
       <Sidebar/>
       {children}
     </div>
