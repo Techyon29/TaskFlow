@@ -42,7 +42,11 @@ const Page = () => {
             if(res.success){
                 toast.success(res.message)
                 loginReset()
-                router.push("/user")
+                if(res.data.role === "admin"){
+                    router.push("/admin")
+                }else{
+                    router.push("/user")
+                }
             }else{
                 toast.error(res.message);
             }

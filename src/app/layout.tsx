@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/src/components/ui/Navbar";
+import Navbar from "@/src/components/ui/home/Navbar";
 import 'react-loading-skeleton/dist/skeleton.css'
 import { Toaster } from "react-hot-toast";
 
