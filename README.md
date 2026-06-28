@@ -1,6 +1,6 @@
 # TaskFlow
 
-TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. For this project, I chose the **Personal Task Manager** exercise, implementing a responsive front-end dashboard coupled with a robust REST API backed by MongoDB. The application allows users to seamlessly create, edit, search, filter, and delete tasks while maintaining a clean, glassmorphic UI with real-time status transitions (Incomplete, Complete), dynamic metrics, due-date flags (e.g., Overdue, Due Today), and interactive feedback.
+TaskFlow is a premium, modern full-stack task management dashboard designed for tracking individual workflows. Originally designed as a task manager, TaskFlow has been expanded with role-based authentication, an OTP verification system, and a dedicated administrative console for managing registered platform users and system performance metrics.
 
 ---
 
@@ -12,14 +12,13 @@ TaskFlow is a premium, modern full-stack task management dashboard designed for 
 
 ## 🛠️ Tech Stack
 
-*   **Next.js 16 (App Router)**: Handled routing, Server Component rendering, and Server API endpoints within a unified structure to simplify database and frontend interactions.
+*   **Next.js 16 (App Router)**: Handled routing, Server Component rendering, and Server API endpoints within a unified structure.
 *   **React 19 & TypeScript**: Enabled robust type-safe state management, dynamic UI component handling, and custom client hooks for responsive interactivity.
 *   **Tailwind CSS v4 & PostCSS**: Used to build a stunning, premium dark-theme interface with custom animations (e.g., floating layers, fade-ins), glassmorphism styles, and mobile-friendly responsive grid designs.
-*   **Shadcn/ui & Base UI**: Used for modern, unstyled accessible UI primitives (e.g., Popover and Button) with customized premium tailwind themes.
-*   **React Day Picker & Date-fns**: Integrated to provide a rich, interactive Calendar interface for due date selection.
-*   **Mongoose & MongoDB**: Employed as the Object Data Modeling (ODM) library to connect to the MongoDB Atlas database and enforce a structured schema for task creation.
+*   **Role-Based Middleware Security**: Implemented Jose JWT session authentication inside an Edge-compatible Next.js Middleware (`src/middleware.ts`) to secure user and admin-level zones separately.
+*   **MongoDB & Mongoose**: Used as the Object Data Modeling (ODM) library to connect to the MongoDB Atlas database and enforce structured schemas for tasks, users, and OTP validation.
+*   **OTP Email Authentication**: Implemented email verification via OTP during signups or password resets.
 *   **Lucide React**: Leveraged for a clean, modern, and light icon design system throughout the dashboard.
-*   **Clsx & Tailwind Merge**: Integrated in a custom `cn` utility to handle conditional classes cleanly without layout/styling conflicts.
 
 ---
 
@@ -65,12 +64,12 @@ npm run start
 
 ## 📖 API Documentation
 
-All backend API routes reside under `/api/task`.
+### Task Endpoints (`/api/user/task` & `/api/user/task/[id]`)
 
-### 1. Get All Tasks
+#### 1. Get All Tasks
 *   **Method**: `GET`
-*   **Path**: `/api/task`
-*   **Request Body**: None
+*   **Path**: `/api/user/task`
+*   **Headers**: `token` (JWT Cookie)
 *   **Response Shape (200 OK)**:
     ```json
     {
@@ -84,26 +83,25 @@ All backend API routes reside under `/api/task`.
           "due_date": "2026-06-15T00:00:00.000Z",
           "status": "incomplete",
           "createdAt": "2026-06-02T12:00:00.000Z",
-          "updatedAt": "2026-06-02T12:05:00.000Z",
-          "__v": 0
+          "updatedAt": "2026-06-02T12:05:00.000Z"
         }
       ]
     }
     ```
 
-### 2. Create Task
+#### 2. Create Task
 *   **Method**: `POST`
-*   **Path**: `/api/task`
+*   **Path**: `/api/user/task`
 *   **Request Body** (JSON):
     ```json
     {
-      "title": "Complete code review",       // Required (string)
-      "description": "Review pull request #12", // Optional (string)
-      "due_date": "2026-06-10T12:00:00.000Z",   // Optional (ISO date string)
-      "status": "incomplete"                    // Required (string: 'incomplete' | 'complete' | 'Incomplete' | 'Complete')
+      "title": "Complete code review",
+      "description": "Review pull request #12",
+      "due_date": "2026-06-10T12:00:00.000Z",
+      "status": "incomplete"
     }
     ```
-*   **Response Shape (210 Created / 201)**:
+*   **Response Shape (201 Created)**:
     ```json
     {
       "success": true,
@@ -113,67 +111,48 @@ All backend API routes reside under `/api/task`.
         "title": "Complete code review",
         "description": "Review pull request #12",
         "due_date": "2026-06-10T12:00:00.000Z",
-        "status": "incomplete",
-        "createdAt": "2026-06-02T12:10:00.000Z",
-        "updatedAt": "2026-06-02T12:10:00.000Z",
-        "__v": 0
+        "status": "incomplete"
       }
     }
     ```
-*   **Response Shape (400 Bad Request)**:
-    ```json
-    {
-      "success": false,
-      "message": "Title and status is required"
-    }
-    ```
 
-### 3. Update Task
-*   **Method**: `PUT`
-*   **Path**: `/api/task/[id]`
-*   **Request Body** (JSON - all fields optional):
-    ```json
-    {
-      "title": "Updated Task Title",
-      "description": "Updated Task Description",
-      "due_date": "2026-06-12T00:00:00.000Z",
-      "status": "complete"
-    }
-    ```
+### Admin Endpoints (`/api/admin`)
+
+#### 1. Get Dashboard Overview Stats
+*   **Method**: `GET`
+*   **Path**: `/api/admin/dashboard`
 *   **Response Shape (200 OK)**:
     ```json
     {
       "success": true,
-      "message": "Task Updated",
-      "task": {
-        "_id": "65bfa7b8cfdfa30012bcab12",
-        "title": "Updated Task Title",
-        "description": "Updated Task Description",
-        "due_date": "2026-06-12T00:00:00.000Z",
-        "status": "complete",
-        "createdAt": "2026-06-02T12:10:00.000Z",
-        "updatedAt": "2026-06-02T12:15:00.000Z",
-        "__v": 0
+      "message": "Dashboard Stats Retrieve",
+      "data": {
+        "totalUser": 150,
+        "totalTask": 890,
+        "newUserCount": 8,
+        "user": [...]
       }
     }
     ```
-*   **Response Shape (404 Not Found)**:
-    ```json
-    {
-      "success": false,
-      "message": "No Task Found"
-    }
-    ```
 
-### 4. Delete Task
-*   **Method**: `DELETE`
-*   **Path**: `/api/task/[id]`
-*   **Request Body**: None
+#### 2. Get User Directory (Paginated)
+*   **Method**: `GET`
+*   **Path**: `/api/admin/user?page=1&limit=10`
 *   **Response Shape (200 OK)**:
     ```json
     {
       "success": true,
-      "message": "Task Delete"
+      "message": "User Data Retrieve",
+      "data": [
+        {
+          "_id": "65bfa7b8cfdfa30012bcab12",
+          "name": "Jane Doe",
+          "email": "jane@example.com",
+          "role": "user",
+          "createdAt": "2026-06-02T12:10:00.000Z",
+          "updatedAt": "2026-06-02T12:10:00.000Z"
+        }
+      ]
     }
     ```
 
@@ -184,26 +163,24 @@ All backend API routes reside under `/api/task`.
 ```
 ├── src/
 │   ├── app/                 # Next.js App Router root, pages, layouts, and API routes
+│   │   ├── admin/           # Admin console pages (Dashboard & User Management)
 │   │   ├── api/             # Backend API endpoint routes
-│   │   │   └── task/        # Endpoints for task actions (/api/task and /api/task/[id])
+│   │   │   ├── admin/       # Dashboard analytics and user retrieval routes
+│   │   │   ├── auth/        # Login, logout, signup, OTP, resetPassword APIs
+│   │   │   └── user/        # User task routes
+│   │   ├── auth/            # Auth pages (Login, Signup)
+│   │   ├── user/            # User-specific dashboard pages
 │   │   ├── globals.css      # Custom global CSS styles (Tailwind configurations)
-│   │   ├── layout.tsx       # Main layout wrapper containing the custom Navbar
-│   │   └── page.tsx         # The interactive TaskFlow dashboard page
+│   │   └── layout.tsx       # Main layout wrapper
 │   ├── components/          # Reusable React components
-│   │   └── ui/              # Design System UI components (Navbar, Skeleton, button, calendar, popover)
+│   │   └── ui/              # Design System UI components
+│   │       ├── admin/       # Admin sidebar navigation
+│   │       └── home/        # Home/Landing UI components
 │   ├── lib/                 # Third-party configurations and utils
 │   │   └── utils.ts         # Utility class merger function (cn) using clsx & tailwind-merge
-│   ├── models/              # Mongoose schema models
-│   │   └── Task.ts          # Mongoose Schema definition for tasks database collection
-│   └── utils/               # Server-side utilities
-│       └── dbConnect.ts     # Mongoose connection layer and database caching
-├── public/                  # Public static assets
-├── components.json          # Shadcn/ui component configuration
-├── eslint.config.mjs        # ESLint rules settings
-├── next.config.ts           # Next.js configurations
-├── package.json             # Application dependencies and run scripts
-├── postcss.config.mjs       # PostCSS configuration for Tailwind CSS v4
-└── tsconfig.json            # TypeScript compile configurations
+│   ├── middleware.ts        # Role-based route guard for admins and users
+│   ├── models/              # Mongoose schema models (Task, User, OTP)
+│   └── utils/               # Server-side utilities (dbConnect)
 ```
 
 ---
@@ -211,17 +188,13 @@ All backend API routes reside under `/api/task`.
 ## 🤖 AI Assistance & Acceleration
 
 This project was built and accelerated using advanced AI programming assistants:
-*   **Antigravity (by Google DeepMind)**: Assisted in writing logic, designing responsive UI layouts and debugging TypeScript errors. This pair-programming collaboration significantly improved development speed and code quality.
+*   **Antigravity (by Google DeepMind)**: Assisted in writing logic, designing responsive UI layouts, debugging TypeScript errors, and implementing premium dark-theme elements. This pair-programming collaboration significantly improved development speed and code quality.
 
 ---
 
 ## 🔮 Next Steps
 
-### What I Chose Not to Do (For Scope)
-*   **Local State Mocking**: Opted to skip frontend-only mock state and fully integrated the dashboard with Mongoose, ensuring data persistence out of the box.
-*   **Multi-tenant Spaces**: Currently configured only for a singular personal workspace badge without user segregation.
-
 ### What to Build Next
-1.  **Add auth system to handle multiple users**: Implement NextAuth.js or Clerk to enable secure user sign-ups, logins, and private workspaces.
-2.  **Add notification system**: Build email alerts or in-app push notifications for tasks that are approaching due dates or are marked as overdue.
-3.  **Hierarchical level data exchange between different layers in a company**: Enable task delegation, supervisor permissions, and progress monitoring reports across team leads, managers, and executives.
+1.  **Add notification system**: Build email alerts or in-app push notifications for tasks that are approaching due dates or are marked as overdue.
+2.  **Task Categories and Labels**: Allow users to filter tasks based on custom-assigned tags or category groupings.
+3.  **Analytics Page for Users**: Create charts and visualization pages showing completion ratios and weekly performance metrics.
